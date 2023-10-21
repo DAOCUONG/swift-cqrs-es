@@ -16,6 +16,7 @@ struct EventStoreAggregateContext<A: Aggregate>: AggregateContext {
         return aggregateValue
     }
 }
+
 protocol AggregateContext {
     associatedtype AggregateType: Aggregate
     func aggregate() -> AggregateType

@@ -4,9 +4,10 @@ protocol PersistedEventRepository {
     func getEvents(aggregateId: String) -> IO<Error,[SerializedEvent]>
     func getLastEvents(aggregateId: String, lastSequence: Int)  -> IO<Error,[SerializedEvent]>
     func getSnapshot(aggregateId: String) -> IO<Error,SerializedSnapshot>
- //  func persist<A: Aggregate>(events: [SerializedEvent], snapshotUpdate: (String, Value, Int)?) 
-    //func streamEvents<A: Aggregate>(aggregateId: String) async throws -> ReplayStream
-    //func streamAllEvents<A: Aggregate>() async throws -> ReplayStream
+    //snapshotupdate(aggregate_id, aggregate_payload, snapshot_sequence
+    func persist(events: [SerializedEvent])-> IO<Error,()>
+    func snapshot(snapshot: SerializedSnapshot) -> IO<Error,()>
+    func streamEvents(aggregateId: String) -> IO<Error, ReplayStream>
 }
 
 struct SerializedEvent: Codable {
@@ -29,7 +30,8 @@ struct SerializedEvent: Codable {
     let payload: String
 
     /// Additional metadata, serialized from a HashMap<String,String>.
-    let metadata: Dictionary<String,String>
+    let metadata: String
+    
 }
 
  struct SerializedSnapshot: Codable {

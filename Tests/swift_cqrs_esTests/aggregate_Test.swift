@@ -3,6 +3,7 @@ import Bow
 import XCTest
 import BowEffects
 let k_max_retry_time = 3
+
 enum LoginFailedReason:Codable,Equatable {
     case wrong_username_password(UInt32)
     case retry_limited
@@ -87,6 +88,8 @@ enum LoginState: Codable, Equatable {
 
 struct LoginAggregate {
     let username: String
+    var state:LoginState
+
 }
 
 func verify_password(_ username:String,_ password:String) -> IO<Error,Bool> {
@@ -222,7 +225,6 @@ extension LoginAggregate: Aggregate {
     typealias E = LoginEvent
     typealias C = LoginCommand
     typealias S = LoginState
-    
     func  handle(_ state: S, _ command: C) -> ([E]) {
         return process_login_command(state)(command)
 
@@ -231,6 +233,14 @@ extension LoginAggregate: Aggregate {
     func apply(_ event: E, _ state: S) -> S {
         return .logged_out
     }
+    
+    func aggregate_type() -> String {
+        return "LoginAggregate"
+    }
+    
+    func aggregate_version() -> String {
+       return "1.0"
+    }
 }
 
 
@@ -238,7 +248,7 @@ final class aggregate_Tests: XCTestCase {
     func testExample() throws {
       
         let login_state = LoginState.logged_out
-        let aggregate = LoginAggregate(username:"dao")
+        let aggregate = LoginAggregate(username:"dao",state: login_state)
 
         let events = aggregate.handle(login_state, LoginCommand.login("dao","cuong"))
 
